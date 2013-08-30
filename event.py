@@ -1,12 +1,22 @@
+# Google client API #
 from apiclient.discovery import build
 from oauth2client.file import Storage
 from oauth2client.client import OAuth2WebServerFlow
 from oauth2client.tools import run
 
+# Common python modules #
+import json
 import httplib2
-import parse
 import pytz
 import datetime
+
+# private modules #
+import parse
+
+
+# load configure file
+config = open('userconf.json').read()
+config_data = json.loads(config)
 
 # Set up a Flow object to be used if we need to authenticate. This
 # sample uses OAuth 2.0, and we set up the OAuth2WebServerFlow with
@@ -16,10 +26,10 @@ import datetime
 # The client_id and client_secret are copied from the API Access tab on
 # the Google APIs Console
 FLOW = OAuth2WebServerFlow(
-    client_id='792502215934.apps.googleusercontent.com',
-    client_secret='NJtj6GWMtLGCbQSvTLCbEuJ9',
-    scope='https://www.googleapis.com/auth/calendar',
-    user_agent='Limited Dungeon Alarm')
+    client_id=config_data['client_id'],
+    client_secret=config_data['client_secret'],
+    scope=config_data['scope'],
+    user_agent=config_data['user_agent'])
 
 # To disable the local server feature, uncomment the following line:
 # FLAGS.auth_local_webserver = False
@@ -41,12 +51,20 @@ http = credentials.authorize(http)
 # the Google APIs Console
 # to get a developerKey for your own application.
 service = build(serviceName='calendar', version='v3', http=http,
-                developerKey='AIzaSyBedS4x3i-cBdVfhtAVfywgq8Z7WLuacqM')
+                developerKey=config_data['developerKey'])
 
 calendarId = 'coder.soap@gmail.com'
 
 
+# @newTime
+# @today [bool] : indicates today or tomorrow
+# @hour  [int]  : the hour of time
+# returns time info of format "yyyy-mm-ddThh:mm:ss.000%p"
+# which compliance to Google API
+# here we use fixed timezone PDT so %p is -07:00
 def newTime(today, hour):
+    # news that www.puzzledragonx.com announced
+    # use time in timezone PDT, a.k.a. US/Pacific
     tz = pytz.timezone('US/Pacific')
     dtm = datetime.datetime.now(tz)
     d = dtm.date()
@@ -70,11 +88,20 @@ colorId value
 '''
 
 
+# @newEvent
+# @today [bool] : indicates today or tomorrow
+# @hour  [int]  : the hour of time
+# returns a event constructed of provided time info
+# we are supposed to update daily so only hour is required
+# TODO
+# support event of variable format
 def newEvent(today, hour):
     start = newTime(today, hour)
     end = newTime(today, hour + 1)
-    print "start time: ", start
-    print "end time: ", end
+    # debug #
+    print "[DEBUG] start time: ", start
+    print "[DEBUG] end time: ", end
+    # end debug #
     event = {
         'summary': 'Call of Limited Dungeon',
         'location': 'PAD',
@@ -89,20 +116,12 @@ def newEvent(today, hour):
     return event
 
 
-def getEvents(pageToken=None):
-    events = service.events().list(
-        calendarId=calendarId,
-        singleEvents=True,
-        maxResults=100,
-        orderBy='startTime',
-        timeMin='2012-11-01T00:00:00-08:00',
-        timeMax='2013-11-30T00:00:00-08:00',
-        pageToken=pageToken,
-        ).execute()
-    return events
-
-
-def insertEvents(event):
+# @insertEvent
+# @event [event] : event to insert
+# insert event to Google calendar
+# for complete event definition please refer to
+# https://developers.google.com/google-apps/calendar/v3/reference/events
+def insertEvent(event):
     created_event = service.events().insert(
         calendarId=calendarId,
         body=event).execute()
@@ -112,22 +131,11 @@ def insertEvents(event):
 def main():
     for i in parse.event_time_today:
         event = newEvent(True, int(i))
-        insertEvents(event)
+        insertEvent(event)
 
     for i in parse.event_time_tomorrow:
         event = newEvent(False, int(i))
-        insertEvents(event)
-'''
-    events = getEvents()
-    while True:
-        for event in events['items']:
-            pprint.pprint(event)
-        page_token = events.get('nextPageToken')
-        if page_token:
-            events = getEvents(page_token)
-        else:
-            break
-'''
+        insertEvent(event)
 
 if __name__ == '__main__':
     main()

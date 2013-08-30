@@ -76,8 +76,10 @@ p.feed(ht)
 getTime(time_today, event_time_today)
 getTime(time_tomorrow, event_time_tomorrow)
 
+# DEBUG #
 for i in event_time_today:
-    print 'today', i
+    print '[DEBUG] today', i
 
 for i in event_time_tomorrow:
-    print 'tomorrow', i
+    print '[DEBUG] tomorrow', i
+# END DEBUG #
