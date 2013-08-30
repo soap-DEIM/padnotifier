@@ -1,0 +1,18 @@
+First of all you need register a project at Google API Console.
+Please refer to the official tuturial
+https://developers.google.com/google-apps/calendar/firstapp#register
+
+Then create a configure file named 'userconf.json' as example
+
+# userconf.json example #
+{
+    "client_id": "your_clinet_id",
+    "client_secret": "your_client_secret",
+    "scope": "your_scope",
+    "user_agent": "your_user_agent_name",
+    "developerKey": "your_developerkey",
+    "calendarId": "your_google_account"
+}
+
+Test it
+$python event.py
