@@ -53,7 +53,7 @@ http = credentials.authorize(http)
 service = build(serviceName='calendar', version='v3', http=http,
                 developerKey=config_data['developerKey'])
 
-calendarId = 'coder.soap@gmail.com'
+calendarId = config_data['calendarId']
 
 
 # @newTime
