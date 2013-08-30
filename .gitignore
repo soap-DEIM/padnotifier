@@ -2,6 +2,7 @@
 
 # user credential and client secret #
 client_secret.json
+userconf.json
 *.dat
 
 # experimental codes #
