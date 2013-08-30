@@ -1,7 +1,7 @@
 *.pyc
 
 # user credential and client secret #
-client_secret.json
+client_secrets.json
 userconf.json
 *.dat
 
