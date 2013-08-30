@@ -1,3 +1,9 @@
+Prerequisites:
+Python 2.7.3 for Linux is known to work;
+Python 2.7.5 for Windows is known failed;
+Other runtime environment remains untested.
+
+
 First of all you need register a project at Google API Console.
 Please refer to the official tuturial
 https://developers.google.com/google-apps/calendar/firstapp#register
